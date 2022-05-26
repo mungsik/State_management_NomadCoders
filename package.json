@@ -1,0 +1,8 @@
+{
+  "name": "state_management_nomadcoders",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://mungsik@github.com/mungsik/State_management_NomadCoders.git",
+  "author": "mungsik <sparkin154@gmail.com>",
+  "license": "MIT"
+}
