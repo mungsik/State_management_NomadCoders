@@ -10,6 +10,8 @@ function ToDoList() {
     handleSubmit,
     // 구조분해할당으로 나중에 이를 이용할 때, formState.errors가 아닌 errors로 사용할 수 있게함.
     formState: { errors },
+    // 특정한 에러를 발생시켜줌
+    setError,
   } = useForm({
     defaultValues: {
       email: "@naver.com",
@@ -18,7 +20,17 @@ function ToDoList() {
   // 데이터가 유효하지 않을 수도 있기 때문에 react-hook-form이 모든 validation을
   // 다 마쳤을 떄만 호출되는 onValid 함수
   const onValid = (data) => {
-    console.log(data);
+    if (data.password !== data.password1) {
+      setError(
+        "password1",
+        { message: "Password are not the same" },
+        // 에러가 난 부분으로 자동으로 커서를 옮겨줌.
+        { shouldFocus: true }
+      );
+    }
+    // 이건 전체 form에 넘겨주는 에러.
+    // 발생하는 문제에 따라 추가적으로 에러를 설정할 수 있게 도와줌.
+    setError("extraError", { message: "Server offline." });
   };
   console.log(errors);
   return (
@@ -28,6 +40,7 @@ function ToDoList() {
         onSubmit={handleSubmit(onValid)}
       >
         {/* spread syntax사용 => register함수가 반환하는 객체를 가져다가 input에 props로 전달 */}
+        {/* 객체 리터럴을 열고, ...register, 그리고 인자로 input의 이름을 넣는거야. */}
         {/* <input {...register("Email")} required placeholder="Email" /> */}
         {/* required를 씀으로써 HTML으로부터 보호를 받을 수 있다 */}
         {/* 그러나 이렇게하면, 해커들이 required를 지우고 사용할 수 있기때문에 */}
@@ -47,7 +60,20 @@ function ToDoList() {
         />
         <span>{errors?.email?.message}</span>
         <input
-          {...register("firstName", { required: true })}
+          // validate는 함수를 값으로 가질건데, 이 함수는 인자로 항목에 현재 쓰여지고 있는 값을 받음.
+          // 그리고 validate는 true 또는 false 를 반환함.
+          // 즉, value를 인자로 받고 true or false를 리턴
+          // "!value.includes("nico")" => 만약에 value가 nico를 포함하지 않는다면, true를 반환
+          // ! react-hook-form 에서 문자열을 리턴하면, 그건 즉 너가 에러 메세지를 리턴한다는 뜻
+          {...register("firstName", {
+            required: "write here",
+            validate: {
+              noNico: (value) =>
+                value.includes("nico") ? "no nico allowed" : true,
+              noNick: (value) =>
+                value.includes("nick") ? "no nick allowed" : true,
+            },
+          })}
           placeholder="First Name"
         />
         <span>{errors?.firstName?.message}</span>
@@ -79,6 +105,9 @@ function ToDoList() {
         />
         <span>{errors?.password1?.message}</span>
         <button>Add</button>
+        {/* 물음표를 붙이면, 그 항목이 undefined면 그 뒤를 실행하지 않음 */}
+        {/* 그러니까 errors가 undefined면, extraError를 찾지 않음. */}
+        <span>{errors?.extraError?.message}</span>
       </form>
     </div>
   );
