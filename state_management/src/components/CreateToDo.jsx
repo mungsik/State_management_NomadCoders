@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
-import { toDoState } from "./atoms";
-import { useSetRecoilState } from "recoil";
+import { toDoState, categoryState } from "./atoms";
+import { useSetRecoilState, useRecoilValue } from "recoil";
 
 /*
 값을 수정하기만하면 되므로,
@@ -9,6 +9,7 @@ CreateToDo에서 atom의 value를 가져올 필요가 없다.
 
 function CreateToDo() {
   const setToDos = useSetRecoilState(toDoState);
+  const category = useRecoilValue(categoryState);
   const { register, handleSubmit, setValue } = useForm();
 
   /*
@@ -37,7 +38,7 @@ function CreateToDo() {
         ...oldToDos, 로 기존에 있던 toDos를 유지.
     */
     setToDos((oldToDos) => [
-      { text: toDo, id: Date.now(), category: "TO_DO" },
+      { text: toDo, id: Date.now(), category: category },
       ...oldToDos,
     ]);
     // setValue => 입력을 받으면 입력칸을 비워줌.
